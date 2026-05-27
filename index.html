@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Nitesh – AI & Tech Creator</title>
+<meta name="description" content="Nitesh – AI & Tech Hacks Daily for students & beginners."/>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--r:#ff3c3c;--r2:#ff7043;--r3:#ffb347;--bg:#070710;--bg2:#0f0f1a;--bg3:#1a1a2e;--text:#f5f5f5;--muted:#9a9aaa;}
+html{scroll-behavior:smooth;}
+body{font-family:'Segoe UI',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;}
+
+/* 3D CANVAS BG */
+#bg3d{position:fixed;inset:0;z-index:0;pointer-events:none;}
+
+/* LOADER */
+#loader{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 0.8s ease;}
+#loader.hide{opacity:0;pointer-events:none;}
+.loader-name{font-size:3rem;font-weight:900;background:linear-gradient(90deg,var(--r),var(--r3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:glowP 1s ease-in-out infinite;}
+@keyframes glowP{0%,100%{filter:brightness(1);}50%{filter:brightness(1.8);}}
+.loader-bar{width:220px;height:3px;background:#1a1a2e;border-radius:3px;margin-top:20px;overflow:hidden;}
+.loader-fill{height:100%;background:linear-gradient(90deg,var(--r),var(--r3));border-radius:3px;animation:lf 2s ease forwards;}
+@keyframes lf{from{width:0}to{width:100%}}
+.loader-txt{font-size:0.8rem;color:var(--muted);margin-top:12px;letter-spacing:2px;}
+
+.page{max-width:880px;margin:0 auto;padding:60px 24px 80px;position:relative;z-index:2;}
+
+/* SCROLL ANIMATIONS */
+.rev{opacity:0;transform:translateY(50px);transition:opacity 0.8s cubic-bezier(.22,1,.36,1),transform 0.8s cubic-bezier(.22,1,.36,1);}
+.rev.on{opacity:1;transform:translateY(0);}
+.rev-l{opacity:0;transform:translateX(-60px);transition:opacity 0.8s cubic-bezier(.22,1,.36,1),transform 0.8s cubic-bezier(.22,1,.36,1);}
+.rev-l.on{opacity:1;transform:translateX(0);}
+.stg>*{opacity:0;transform:translateY(30px) scale(0.96);transition:opacity 0.5s ease,transform 0.5s ease;}
+.stg.on>*:nth-child(1){opacity:1;transform:none;transition-delay:0s;}
+.stg.on>*:nth-child(2){opacity:1;transform:none;transition-delay:.1s;}
+.stg.on>*:nth-child(3){opacity:1;transform:none;transition-delay:.2s;}
+.stg.on>*:nth-child(4){opacity:1;transform:none;transition-delay:.3s;}
+.stg.on>*:nth-child(5){opacity:1;transform:none;transition-delay:.4s;}
+.stg.on>*:nth-child(6){opacity:1;transform:none;transition-delay:.5s;}
+
+.divider{width:0;height:3px;background:linear-gradient(90deg,var(--r),var(--r3));border-radius:2px;margin:36px 0;transition:width 1.2s ease;}
+.divider.on{width:60px;}
+.sec-label{font-size:0.72rem;font-weight:700;color:var(--r);letter-spacing:3px;text-transform:uppercase;margin-bottom:8px;}
+.sec-title{font-size:clamp(1.5rem,4vw,2.2rem);font-weight:800;margin-bottom:6px;}
+
+/* HERO */
+.hero{min-height:96vh;display:flex;flex-direction:column;justify-content:center;padding-top:20px;}
+.hero-top{display:flex;align-items:center;gap:36px;margin-bottom:44px;}
+
+/* 3D AVATAR */
+.avatar-wrap{position:relative;flex-shrink:0;width:120px;height:120px;perspective:400px;}
+.avatar-3d{width:120px;height:120px;border-radius:50%;position:relative;transform-style:preserve-3d;animation:float3d 4s ease-in-out infinite;}
+@keyframes float3d{0%,100%{transform:translateY(0) rotateY(0deg);}25%{transform:translateY(-10px) rotateY(8deg);}75%{transform:translateY(-5px) rotateY(-8deg);}}
+.avatar-ring-outer{position:absolute;inset:-10px;border-radius:50%;border:2px solid transparent;background:linear-gradient(var(--bg),var(--bg)) padding-box,conic-gradient(var(--r),var(--r3),#fff,var(--r)) border-box;animation:spin 3s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.avatar-ring-inner{position:absolute;inset:-4px;border-radius:50%;border:1px solid rgba(255,60,60,0.3);animation:spin 6s linear infinite reverse;}
+.avatar-img{width:120px;height:120px;border-radius:50%;object-fit:cover;object-position:center top;position:relative;z-index:1;box-shadow:0 0 30px rgba(255,60,60,0.4),0 0 60px rgba(255,60,60,0.1);}
+
+.hero-info .greeting{font-size:0.9rem;color:var(--muted);margin-bottom:6px;}
+.hero-info .name{font-size:clamp(2.5rem,8vw,4.5rem);font-weight:900;line-height:1;background:linear-gradient(135deg,#fff 30%,var(--r));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:none;filter:drop-shadow(0 0 20px rgba(255,60,60,0.3));}
+.hero-info .handle{font-size:1rem;color:var(--r);margin-top:6px;font-weight:600;}
+.typewrite{font-size:1rem;color:var(--muted);margin-top:10px;min-height:1.5em;}
+.typewrite span{border-right:2px solid var(--r);padding-right:2px;animation:blink .7s step-end infinite;}
+@keyframes blink{50%{border-color:transparent}}
+.value-prop{font-size:1rem;color:var(--muted);max-width:580px;line-height:1.8;margin-bottom:32px;}
+.value-prop strong{color:var(--text);}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:36px;}
+.stat{background:rgba(26,26,46,0.8);border:1px solid rgba(255,60,60,0.2);border-radius:16px;padding:18px 12px;text-align:center;cursor:default;transition:all 0.4s cubic-bezier(.22,1,.36,1);position:relative;overflow:hidden;backdrop-filter:blur(10px);transform-style:preserve-3d;}
+.stat::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,60,60,0.12),transparent);opacity:0;transition:opacity 0.3s;}
+.stat:hover{border-color:var(--r);transform:translateY(-10px) rotateX(5deg) scale(1.05);box-shadow:0 20px 50px rgba(255,60,60,0.25),0 0 0 1px rgba(255,60,60,0.3);}
+.stat:hover::before{opacity:1;}
+.stat h3{font-size:1.6rem;font-weight:900;background:linear-gradient(135deg,var(--r),var(--r3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.stat p{font-size:0.72rem;color:var(--muted);margin-top:4px;}
+.stat-live{position:absolute;top:8px;right:8px;width:7px;height:7px;background:var(--r);border-radius:50%;animation:livePulse 1.5s ease-in-out infinite;}
+@keyframes livePulse{0%,100%{box-shadow:0 0 0 0 rgba(255,60,60,0.6);}50%{box-shadow:0 0 0 6px rgba(255,60,60,0);}}
+
+/* BUTTONS */
+.hero-btns{display:flex;gap:14px;flex-wrap:wrap;}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 30px;border-radius:12px;font-size:0.92rem;font-weight:700;text-decoration:none;border:none;cursor:pointer;transition:all 0.3s;position:relative;overflow:hidden;}
+.btn-primary{background:linear-gradient(135deg,var(--r),var(--r2));color:#fff;box-shadow:0 4px 24px rgba(255,60,60,0.4);}
+.btn-primary:hover{transform:translateY(-4px) scale(1.03);box-shadow:0 12px 40px rgba(255,60,60,0.6);}
+.btn-ghost{background:transparent;border:2px solid rgba(255,60,60,0.4);color:var(--r);}
+.btn-ghost:hover{border-color:var(--r);background:rgba(255,60,60,0.1);transform:translateY(-4px);}
+
+/* ABOUT */
+.about-list{list-style:none;display:flex;flex-direction:column;gap:4px;}
+.about-list li{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:10px;color:var(--muted);font-size:0.95rem;transition:all 0.3s;cursor:default;}
+.about-list li:hover{background:rgba(255,60,60,0.06);color:var(--text);transform:translateX(8px);}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--r);flex-shrink:0;transition:transform 0.3s;}
+.about-list li:hover .dot{transform:scale(1.8);}
+
+/* CONTENT GRID */
+.content-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.cc{background:rgba(26,26,46,0.8);border:1px solid rgba(255,60,60,0.12);border-radius:14px;overflow:hidden;cursor:pointer;transition:all 0.4s cubic-bezier(.22,1,.36,1);text-decoration:none;backdrop-filter:blur(8px);transform-style:preserve-3d;}
+.cc:hover{border-color:var(--r);transform:translateY(-12px) rotateX(3deg);box-shadow:0 24px 60px rgba(255,60,60,0.25);}
+.cc-thumb{height:120px;display:flex;align-items:center;justify-content:center;font-size:2.8rem;background:linear-gradient(135deg,rgba(255,60,60,0.15),rgba(255,112,67,0.05));transition:all 0.3s;position:relative;}
+.cc:hover .cc-thumb{background:linear-gradient(135deg,rgba(255,60,60,0.3),rgba(255,112,67,0.15));}
+.play{position:absolute;right:10px;bottom:10px;background:rgba(255,60,60,0.85);border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-size:0.75rem;opacity:0;transform:scale(0.6);transition:all 0.3s;}
+.cc:hover .play{opacity:1;transform:scale(1);}
+.cc-body{padding:14px;}
+.cc-body h3{font-size:0.88rem;font-weight:700;color:var(--text);margin-bottom:4px;}
+.cc-body p{font-size:0.78rem;color:var(--muted);line-height:1.5;}
+.tag{display:inline-block;margin-top:8px;font-size:0.7rem;color:var(--r);border:1px solid rgba(255,60,60,0.3);padding:3px 10px;border-radius:20px;}
+.views{font-size:0.72rem;color:var(--muted);margin-top:6px;}
+
+/* SKILLS */
+.skills{display:flex;flex-direction:column;gap:16px;}
+.sk-row{display:grid;grid-template-columns:150px 1fr 38px;gap:14px;align-items:center;}
+.sk-name{font-size:0.9rem;color:var(--text);}
+.sk-bar{background:rgba(255,60,60,0.1);border-radius:20px;height:9px;overflow:hidden;}
+.sk-fill{height:100%;border-radius:20px;background:linear-gradient(90deg,var(--r),var(--r3));width:0;transition:width 1.5s cubic-bezier(.22,1,.36,1);}
+.sk-pct{font-size:0.78rem;color:var(--r);font-weight:700;}
+
+/* SERVICES */
+.svc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+.svc{background:rgba(26,26,46,0.8);border:1px solid rgba(255,60,60,0.12);border-radius:14px;padding:20px;display:flex;gap:14px;align-items:flex-start;transition:all 0.35s;cursor:default;backdrop-filter:blur(8px);}
+.svc:hover{border-color:var(--r);transform:translateY(-6px) scale(1.02);box-shadow:0 14px 40px rgba(255,60,60,0.18);}
+.svc-icon{font-size:1.8rem;transition:transform 0.3s;}
+.svc:hover .svc-icon{transform:scale(1.25) rotate(-10deg);}
+.svc h3{font-size:0.92rem;font-weight:700;color:var(--text);margin-bottom:4px;}
+.svc p{font-size:0.82rem;color:var(--muted);}
+
+/* TIMELINE */
+.tl{border-left:2px solid rgba(255,60,60,0.2);margin-left:12px;padding-left:30px;}
+.tl-item{position:relative;padding-bottom:28px;}
+.tl-item:last-child{padding-bottom:0;}
+.tl-dot{position:absolute;left:-39px;top:5px;width:16px;height:16px;border-radius:50%;background:var(--r);border:3px solid var(--bg);animation:tlP 2.5s ease-in-out infinite;}
+@keyframes tlP{0%,100%{box-shadow:0 0 0 0 rgba(255,60,60,0.5);}50%{box-shadow:0 0 0 10px rgba(255,60,60,0);}}
+.tl-date{font-size:0.72rem;color:var(--r);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
+.tl-item h3{font-size:0.95rem;font-weight:700;color:var(--text);margin-bottom:5px;}
+.tl-item p{font-size:0.88rem;color:var(--muted);line-height:1.6;}
+.tl-badge{display:inline-block;margin-top:8px;font-size:0.73rem;padding:4px 12px;border-radius:20px;background:rgba(255,60,60,0.1);border:1px solid rgba(255,60,60,0.3);color:var(--r);}
+
+/* WHY */
+.why-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
+.why{background:rgba(26,26,46,0.8);border:1px solid rgba(255,60,60,0.12);border-radius:14px;padding:18px;display:flex;gap:12px;transition:all 0.3s;cursor:default;backdrop-filter:blur(8px);}
+.why:hover{border-color:var(--r);transform:scale(1.03);box-shadow:0 10px 30px rgba(255,60,60,0.15);}
+.why-icon{font-size:1.4rem;flex-shrink:0;}
+.why h3{font-size:0.9rem;font-weight:700;color:var(--text);margin-bottom:3px;}
+.why p{font-size:0.82rem;color:var(--muted);}
+
+/* PROCESS */
+.proc{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.proc-card{background:rgba(26,26,46,0.8);border:1px solid rgba(255,60,60,0.12);border-radius:14px;padding:20px 14px;text-align:center;transition:all 0.35s;cursor:default;position:relative;overflow:hidden;backdrop-filter:blur(8px);}
+.proc-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--r),var(--r3));transform:scaleX(0);transition:transform 0.3s;transform-origin:left;}
+.proc-card:hover{border-color:var(--r);transform:translateY(-8px);box-shadow:0 16px 40px rgba(255,60,60,0.2);}
+.proc-card:hover::after{transform:scaleX(1);}
+.proc-num{font-size:2rem;font-weight:900;background:linear-gradient(135deg,var(--r),var(--r3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px;}
+.proc-card h3{font-size:0.85rem;font-weight:700;color:var(--text);margin-bottom:4px;}
+.proc-card p{font-size:0.78rem;color:var(--muted);}
+
+/* TESTI */
+.testi-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+.testi{background:rgba(26,26,46,0.8);border:1px solid rgba(255,60,60,0.12);border-radius:14px;padding:24px;transition:all 0.3s;cursor:default;backdrop-filter:blur(8px);}
+.testi:hover{border-color:var(--r);transform:translateY(-6px);}
+.stars{color:#f59e0b;margin-bottom:12px;}
+.testi blockquote{font-size:0.9rem;color:var(--muted);font-style:italic;line-height:1.7;}
+.testi-name{margin-top:14px;font-size:0.85rem;font-weight:700;color:var(--text);}
+.testi-role{font-size:0.78rem;color:var(--muted);}
+
+/* PLATFORMS */
+.plat-list{display:flex;gap:14px;flex-wrap:wrap;}
+.plat{display:inline-flex;align-items:center;gap:8px;background:rgba(26,26,46,0.8);border:1px solid rgba(255,60,60,0.2);padding:12px 26px;border-radius:12px;font-size:0.88rem;color:var(--text);text-decoration:none;transition:all 0.3s;backdrop-filter:blur(8px);}
+.plat:hover{border-color:var(--r);color:var(--r);transform:translateY(-5px);box-shadow:0 10px 32px rgba(255,60,60,0.25);}
+
+/* GITHUB/CONTACT */
+.svc a.svc{text-decoration:none;}
+
+/* LIVE BADGE */
+.live-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,60,60,0.1);border:1px solid rgba(255,60,60,0.3);color:var(--r);font-size:0.72rem;font-weight:700;padding:4px 12px;border-radius:20px;letter-spacing:1px;margin-bottom:16px;}
+.live-dot{width:6px;height:6px;background:var(--r);border-radius:50%;animation:livePulse 1.5s infinite;}
+
+/* CTA */
+.cta-section{background:linear-gradient(135deg,rgba(255,60,60,0.12),rgba(255,112,67,0.06));border:1px solid rgba(255,60,60,0.25);border-radius:20px;padding:50px 32px;text-align:center;position:relative;overflow:hidden;backdrop-filter:blur(12px);}
+.cta-section::before{content:'🚀';position:absolute;font-size:12rem;opacity:0.03;top:50%;left:50%;transform:translate(-50%,-50%);}
+.cta-section h2{font-size:1.9rem;font-weight:900;color:#fff;margin-bottom:12px;}
+.cta-section p{color:var(--muted);margin-bottom:28px;}
+.cta-btns{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;}
+
+/* SCROLL TOP */
+.scrolltop{position:fixed;bottom:28px;right:28px;width:48px;height:48px;background:linear-gradient(135deg,var(--r),var(--r2));border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;cursor:pointer;z-index:100;border:none;color:#fff;box-shadow:0 6px 24px rgba(255,60,60,0.4);opacity:0;transform:translateY(20px);transition:all 0.3s;}
+.scrolltop.on{opacity:1;transform:translateY(0);}
+.scrolltop:hover{transform:translateY(-4px);box-shadow:0 12px 36px rgba(255,60,60,0.6);}
+
+/* FOOTER */
+footer{margin-top:64px;padding-top:28px;border-top:1px solid rgba(255,60,60,0.12);text-align:center;}
+.footer-links{display:flex;justify-content:center;gap:24px;flex-wrap:wrap;margin-bottom:16px;}
+.footer-links a{color:var(--muted);text-decoration:none;font-size:0.85rem;transition:all 0.3s;display:inline-block;}
+.footer-links a:hover{color:var(--r);transform:translateY(-2px);}
+footer p{color:var(--muted);font-size:0.8rem;}
+
+/* API LIVE STATS NOTE */
+.api-note{background:rgba(255,60,60,0.06);border:1px solid rgba(255,60,60,0.2);border-radius:10px;padding:12px 16px;font-size:0.8rem;color:var(--muted);margin-top:8px;display:flex;align-items:center;gap:8px;}
+
+@media(max-width:640px){
+  .stats{grid-template-columns:repeat(2,1fr);}
+  .content-grid{grid-template-columns:repeat(2,1fr);}
+  .svc-grid,.why-grid,.testi-grid{grid-template-columns:1fr;}
+  .proc{grid-template-columns:repeat(2,1fr);}
+  .hero-top{flex-direction:column;text-align:center;}
+  .hero-btns{justify-content:center;}
+  .sk-row{grid-template-columns:110px 1fr 32px;}
+}
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="loader-name">Nitesh</div>
+  <div class="loader-bar"><div class="loader-fill"></div></div>
+  <div class="loader-txt">LOADING · AI & TECH</div>
+</div>
+
+<!-- 3D BACKGROUND -->
+<canvas id="bg3d"></canvas>
+
+<!-- SCROLL TOP -->
+<button class="scrolltop" id="scrolltop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<div class="page">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="live-badge rev"><div class="live-dot"></div> LIVE · AI & TECH DAILY</div>
+
+  <div class="hero-top rev-l">
+    <div class="avatar-wrap">
+      <div class="avatar-3d">
+        <div class="avatar-ring-outer"></div>
+        <div class="avatar-ring-inner"></div>
+        <img class="avatar-img" id="dpimg" src="https://i.postimg.cc/zfQpzJ21/Screenshot-2026-05-27-09-07-50-56-40deb401b9ffe8e1df2f1cc5ba480b12.jpg" alt="Nitesh"
+          style="width:120px;height:120px;border-radius:50%;object-fit:cover;object-position:center top;position:relative;z-index:1;box-shadow:0 0 30px rgba(255,60,60,0.4),0 0 60px rgba(255,60,60,0.1);"
+          crossorigin="anonymous"
+          referrerpolicy="no-referrer"
+          onerror="
+            const urls=[
+              'https://i.postimg.cc/zfQpzJ21/Screenshot-2026-05-27-09-07-50-56-40deb401b9ffe8e1df2f1cc5ba480b12.jpg',
+              'https://i.ibb.co/MxJ3M6LX/nitesh.jpg'
+            ];
+            let idx=this.dataset.try?+this.dataset.try:0;
+            idx++;
+            if(idx<urls.length){this.dataset.try=idx;this.src=urls[idx];}
+            else{this.outerHTML='<div style=\'width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,#ff3c3c,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:900;color:#fff;position:relative;z-index:1;\'>N</div>';}
+          "/>
+      </div>
+    </div>
+    <div class="hero-info">
+      <div class="greeting">👋 Hey, I'm</div>
+      <div class="name">Nitesh</div>
+      <div class="handle">@niitech20</div>
+      <div class="typewrite"><span id="tw"></span></div>
+    </div>
+  </div>
+
+  <p class="value-prop rev">Your one-stop destination for <strong>AI tools, tech hacks, internship opportunities</strong> and hidden tools that nobody tells you about — all for free.</p>
+
+  <div class="stats stg" id="stats-container">
+    <div class="stat">
+      <div class="stat-live"></div>
+      <h3 id="s-subs">—</h3>
+      <p>Subscribers</p>
+    </div>
+    <div class="stat">
+      <div class="stat-live"></div>
+      <h3 id="s-vids">—</h3>
+      <p>Videos</p>
+    </div>
+    <div class="stat">
+      <div class="stat-live"></div>
+      <h3 id="s-views">—</h3>
+      <p>Total Views</p>
+    </div>
+    <div class="stat"><h3>🚀 Free</h3><p>All Content</p></div>
+  </div>
+
+  <div class="hero-btns rev">
+    <a href="https://www.youtube.com/@niitech20" target="_blank" class="btn btn-primary">▶ Watch on YouTube</a>
+    <a href="https://instagram.com/tech_niitt" target="_blank" class="btn btn-ghost">📸 Instagram</a>
+  </div>
+</div>
+
+<div class="divider rev"></div>
+
+<!-- ABOUT -->
+<div class="rev">
+  <div class="sec-label">About</div>
+  <div class="sec-title">Who is Nitesh?</div>
+  <ul class="about-list stg">
+    <li><span class="dot"></span>Tech creator focused on AI tools, career hacks & internship opportunities</li>
+    <li><span class="dot"></span>Shares hidden tools "jo koi nahi batata" — completely free</li>
+    <li><span class="dot"></span>Makes content for students, freshers & beginners in India</li>
+    <li><span class="dot"></span>YouTube channel joined August 2023 · growing every day</li>
+    <li><span class="dot"></span>Also active on Instagram & GitHub with curated tech resources</li>
+  </ul>
+</div>
+
+<div class="divider rev"></div>
+
+<!-- CONTENT -->
+<div class="rev">
+  <div class="sec-label">Content</div>
+  <div class="sec-title">Latest Videos</div>
+  <div class="content-grid stg" style="margin-top:20px;">
+    <a href="https://www.youtube.com/@niitech20" target="_blank" class="cc"><div class="cc-thumb">🤖<div class="play">▶</div></div><div class="cc-body"><h3>Build Your Own AI Tools</h3><p>Step-by-step guide to build AI tools from scratch.</p><span class="tag">AI Tools</span><div class="views">👁 1k views</div></div></a>
+    <a href="https://www.youtube.com/@niitech20" target="_blank" class="cc"><div class="cc-thumb">🎓<div class="play">▶</div></div><div class="cc-body"><h3>Google Internship 2026</h3><p>Bangalore internship for students & freshers.</p><span class="tag">Internship</span><div class="views">👁 38 views</div></div></a>
+    <a href="https://www.youtube.com/@niitech20" target="_blank" class="cc"><div class="cc-thumb">🏢<div class="play">▶</div></div><div class="cc-body"><h3>Microsoft AI Internship</h3><p>Free certificate, no fees — apply before June 15.</p><span class="tag">Internship</span><div class="views">👁 25 views</div></div></a>
+    <a href="https://www.youtube.com/@niitech20" target="_blank" class="cc"><div class="cc-thumb">🛠️<div class="play">▶</div></div><div class="cc-body"><h3>AI Tools for Students</h3><p>Best free AI tools every student should use.</p><span class="tag">AI Tools</span><div class="views">👁 295 views</div></div></a>
+    <a href="https://www.youtube.com/@niitech20" target="_blank" class="cc"><div class="cc-thumb">🎯<div class="play">▶</div></div><div class="cc-body"><h3>Student Ambassador 2026</h3><p>Represent, lead, and earn exciting rewards.</p><span class="tag">Opportunity</span><div class="views">👁 175 views</div></div></a>
+    <a href="https://www.youtube.com/@niitech20" target="_blank" class="cc"><div class="cc-thumb">⚡<div class="play">▶</div></div><div class="cc-body"><h3>Hidden Tech Hacks</h3><p>Tools nobody tells you about — free.</p><span class="tag">Tech Hacks</span><div class="views">👁 Coming soon</div></div></a>
+  </div>
+</div>
+
+<div class="divider rev"></div>
+
+<!-- SKILLS -->
+<div class="rev">
+  <div class="sec-label">Skills</div>
+  <div class="sec-title">What I Know</div>
+  <div class="skills" style="margin-top:20px;">
+    <div class="sk-row"><span class="sk-name">Content Creation</span><div class="sk-bar"><div class="sk-fill" data-w="85"></div></div><span class="sk-pct">85%</span></div>
+    <div class="sk-row"><span class="sk-name">AI Tools</span><div class="sk-bar"><div class="sk-fill" data-w="80"></div></div><span class="sk-pct">80%</span></div>
+    <div class="sk-row"><span class="sk-name">Video Editing</span><div class="sk-bar"><div class="sk-fill" data-w="75"></div></div><span class="sk-pct">75%</span></div>
+    <div class="sk-row"><span class="sk-name">Thumbnail Design</span><div class="sk-bar"><div class="sk-fill" data-w="78"></div></div><span class="sk-pct">78%</span></div>
+    <div class="sk-row"><span class="sk-name">Research & Curation</span><div class="sk-bar"><div class="sk-fill" data-w="90"></div></div><span class="sk-pct">90%</span></div>
+  </div>
+</div>
+
+<div class="divider rev"></div>
+
+<!-- SERVICES -->
+<div class="rev">
+  <div class="sec-label">Topics</div>
+  <div class="sec-title">What I Cover</div>
+  <div class="svc-grid stg" style="margin-top:20px;">
+    <div class="svc"><div class="svc-icon">🤖</div><div><h3>AI Tools & Hacks</h3><p>Hidden AI tools for students — free, powerful, practical.</p></div></div>
+    <div class="svc"><div class="svc-icon">💼</div><div><h3>Internship Alerts</h3><p>Google, Microsoft, and more — opportunities you can't miss.</p></div></div>
+    <div class="svc"><div class="svc-icon">🎓</div><div><h3>Student Resources</h3><p>Swags, goodies, ambassador programs, and career tips.</p></div></div>
+    <div class="svc"><div class="svc-icon">⚡</div><div><h3>Tech Updates</h3><p>Latest in tech — explained simply for everyone.</p></div></div>
+  </div>
+</div>
+
+<div class="divider rev"></div>
+
+<!-- JOURNEY -->
+<div class="rev">
+  <div class="sec-label">Journey</div>
+  <div class="sec-title">How It Started</div>
+  <div class="tl" style="margin-top:24px;">
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-date">Aug 2023 — Start</div><h3>Channel Created</h3><p>Joined YouTube with one goal: share tech knowledge students actually need but nobody talks about.</p><span class="tl-badge">✅ Channel Live</span></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-date">2024 — Growth</div><h3>Building the Library</h3><p>Published 20+ videos covering AI tools, internship opportunities, and student resources. Growing organically.</p><span class="tl-badge">✅ 20+ Videos</span></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-date">2025–2026 — Now</div><h3>Scaling Up</h3><p>Expanding to Instagram, GitHub, and beyond. More internship alerts, AI tool reviews, and exclusive content daily.</p><span class="tl-badge">🚀 Growing</span></div>
+  </div>
+</div>
+
+<div class="divider rev"></div>
+
+<!-- WHY -->
+<div class="rev">
+  <div class="sec-label">Why Follow</div>
+  <div class="sec-title">Why Watch This Channel</div>
+  <div class="why-grid stg" style="margin-top:20px;">
+    <div class="why"><div class="why-icon">🆓</div><div><h3>Always Free</h3><p>Every tool, resource, and tip shared is completely free.</p></div></div>
+    <div class="why"><div class="why-icon">🎯</div><div><h3>Student-First</h3><p>Made specifically for students and beginners in India.</p></div></div>
+    <div class="why"><div class="why-icon">⚡</div><div><h3>Updated Daily</h3><p>Fresh content on internships, AI tools, and tech every day.</p></div></div>
+    <div class="why"><div class="why-icon">🔍</div><div><h3>Hidden Gems</h3><p>Tools and opportunities mainstream creators won't show you.</p></div></div>
+  </div>
+</div>
+
+<div class="divider rev"></div>
+
+<!-- PROCESS -->
+<div class="rev">
+  <div class="sec-label">Process</div>
+  <div class="sec-title">How I Create Content</div>
+  <div class="proc stg" style="margin-top:20px;">
+    <div class="proc-card"><div class="proc-num">01</div><h3>Research</h3><p>Find real tools & opportunities that matter.</p></div>
+    <div class="proc-card"><div class="proc-num">02</div><h3>Test</h3><p>Try everything personally before recommending.</p></div>
+    <div class="proc-card"><div class="proc-num">03</div><h3>Create</h3><p>Edit video clearly and simply for beginners.</p></div>
+    <div class="proc-card"><div class="proc-num">04</div><h3>Publish</h3><p>Upload with thumbnails that help you find it.</p></div>
+  </div>
+</div>
+
+<div class="divider rev"></div>
+
+<!-- TESTIMONIALS -->
+<div class="rev">
+  <div class="sec-label">Community</div>
+  <div class="sec-title">What Viewers Say</div>
+  <div class="testi-grid stg" style="margin-top:20px;">
+    <div class="testi"><div class="stars">★★★★★</div><blockquote>"Found out about the Google Internship through this channel. Applied immediately. Really helpful content!"</blockquote><div class="testi-name">Riya S.</div><div class="testi-role">B.Tech Student, Delhi</div></div>
+    <div class="testi"><div class="stars">★★★★★</div><blockquote>"The AI tools videos are gold. Hidden gems that save hours of my time every week. Subscribe karo yaar!"</blockquote><div class="testi-name">Aryan M.</div><div class="testi-role">Fresher, Mumbai</div></div>
+  </div>
+</div>
+
+<div class="divider rev"></div>
+
+<!-- GITHUB & CONTACT -->
+<div class="rev">
+  <div class="sec-label">Connect</div>
+  <div class="sec-title">GitHub & Contact</div>
+  <div class="svc-grid stg" style="margin-top:20px;">
+    <a href="https://github.com/niteshtech13-blip" target="_blank" style="text-decoration:none;"><div class="svc"><div class="svc-icon">💻</div><div><h3>GitHub</h3><p style="color:var(--r);font-size:0.82rem;">github.com/niteshtech13-blip</p><p style="margin-top:6px;">Explore open source projects, code & tech resources.</p></div></div></a>
+    <a href="mailto:officialsite883@gmail.com" style="text-decoration:none;"><div class="svc"><div class="svc-icon">📧</div><div><h3>Email / Collaborate</h3><p style="color:var(--r);font-size:0.82rem;">officialsite883@gmail.com</p><p style="margin-top:6px;">For collaborations, sponsorships or any queries.</p></div></div></a>
+  </div>
+</div>
+
+<div class="divider rev"></div>
+
+<!-- PLATFORMS -->
+<div class="rev">
+  <div class="sec-label">Find Me</div>
+  <div class="sec-title">I'm Active On</div>
+  <div class="plat-list stg" style="margin-top:20px;">
+    <a href="https://www.youtube.com/@niitech20" target="_blank" class="plat">▶ YouTube @niitech20</a>
+    <a href="https://instagram.com/tech_niitt" target="_blank" class="plat">📸 Instagram @tech_niitt</a>
+    <a href="https://github.com/niteshtech13-blip" target="_blank" class="plat">💻 GitHub</a>
+  </div>
+</div>
+
+<div class="divider rev"></div>
+
+<!-- CTA -->
+<div class="cta-section rev">
+  <h2>Subscribe & Stay Updated 🚀</h2>
+  <p>Never miss an internship, AI tool, or tech hack again.</p>
+  <div class="cta-btns">
+    <a href="https://www.youtube.com/@niitech20" target="_blank" class="btn btn-primary">▶ Subscribe Now</a>
+    <a href="https://instagram.com/tech_niitt" target="_blank" class="btn btn-ghost">📸 Follow on Instagram</a>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="rev">
+  <div class="footer-links">
+    <a href="https://www.youtube.com/@niitech20" target="_blank">▶ YouTube</a>
+    <a href="https://instagram.com/tech_niitt" target="_blank">📸 Instagram</a>
+    <a href="https://github.com/niteshtech13-blip" target="_blank">💻 GitHub</a>
+    <a href="mailto:officialsite883@gmail.com">📧 Email</a>
+  </div>
+  <p>© 2026 Nitesh · @niitech20 · Learn · Create · Inspire · India 🇮🇳</p>
+</footer>
+
+</div>
+
+<script>
+// ─── LOADER ───
+window.addEventListener('load',()=>{setTimeout(()=>document.getElementById('loader').classList.add('hide'),2100);});
+
+// ─── 3D BACKGROUND (Three.js-style with Canvas) ───
+const canvas=document.getElementById('bg3d');
+const ctx=canvas.getContext('2d');
+let W,H,stars=[],rings=[];
+
+function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;}
+resize();
+window.addEventListener('resize',resize);
+
+// Stars
+for(let i=0;i<200;i++){
+  stars.push({x:Math.random()*2000-1000,y:Math.random()*2000-1000,z:Math.random()*1000,size:Math.random()*1.5+0.5,speed:Math.random()*0.3+0.1});
+}
+
+// 3D Rings
+for(let i=0;i<5;i++){
+  rings.push({rx:Math.random()*1200-600,ry:Math.random()*800-400,rz:300+i*200,radius:80+i*60,rotX:Math.random()*Math.PI,rotY:Math.random()*Math.PI,rotSpeed:0.002+Math.random()*0.003,color:`rgba(255,${60+i*20},60,`});
+}
+
+let t=0;
+function drawBg(){
+  ctx.clearRect(0,0,W,H);
+  // Deep space gradient
+  const grad=ctx.createRadialGradient(W/2,H/2,0,W/2,H/2,Math.max(W,H));
+  grad.addColorStop(0,'#0f0f1a');
+  grad.addColorStop(1,'#070710');
+  ctx.fillStyle=grad;
+  ctx.fillRect(0,0,W,H);
+
+  const cx=W/2,cy=H/2,fov=300;
+
+  // Draw stars with depth
+  stars.forEach(s=>{
+    s.z-=s.speed;
+    if(s.z<=0)s.z=1000;
+    const px=cx+(s.x/s.z)*fov;
+    const py=cy+(s.y/s.z)*fov;
+    const size=s.size*(1-s.z/1000)*2;
+    const alpha=1-s.z/1000;
+    if(px>0&&px<W&&py>0&&py<H){
+      ctx.beginPath();
+      ctx.arc(px,py,size,0,Math.PI*2);
+      ctx.fillStyle=`rgba(255,200,200,${alpha})`;
+      ctx.fill();
+    }
+  });
+
+  // Floating 3D rings
+  rings.forEach((r,i)=>{
+    r.rotX+=r.rotSpeed;
+    r.rotY+=r.rotSpeed*0.7;
+    const depth=r.rz+Math.sin(t*0.5+i)*100;
+    const scale=fov/(fov+depth);
+    const px=cx+(r.rx*Math.cos(r.rotY))*scale;
+    const py=cy+(r.ry*Math.cos(r.rotX)+depth*0.1*Math.sin(r.rotX))*scale;
+    const rad=r.radius*scale;
+    const alpha=0.08+Math.sin(t+i)*0.04;
+    ctx.beginPath();
+    ctx.ellipse(px,py,rad,rad*0.35,r.rotY,0,Math.PI*2);
+    ctx.strokeStyle=r.color+alpha+')';
+    ctx.lineWidth=1.5;
+    ctx.stroke();
+  });
+
+  // Big floating orbs
+  for(let i=0;i<3;i++){
+    const ox=W*0.2+W*0.6*Math.sin(t*0.15+i*2.1);
+    const oy=H*0.2+H*0.6*Math.sin(t*0.1+i*1.7);
+    const grad2=ctx.createRadialGradient(ox,oy,0,ox,oy,200+i*80);
+    grad2.addColorStop(0,`rgba(255,60,60,0.06)`);
+    grad2.addColorStop(1,'transparent');
+    ctx.fillStyle=grad2;
+    ctx.beginPath();
+    ctx.arc(ox,oy,200+i*80,0,Math.PI*2);
+    ctx.fill();
+  }
+
+  // Grid lines perspective
+  ctx.strokeStyle='rgba(255,60,60,0.03)';
+  ctx.lineWidth=1;
+  for(let i=-10;i<=10;i++){
+    const x=cx+i*80;
+    ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();
+  }
+  for(let j=-10;j<=10;j++){
+    const y=cy+j*80;
+    ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();
+  }
+
+  t+=0.01;
+  requestAnimationFrame(drawBg);
+}
+drawBg();
+
+// ─── SCROLL REVEAL ───
+const obs=new IntersectionObserver(els=>{els.forEach(e=>{if(e.isIntersecting)e.target.classList.add('on');});},{threshold:0.08});
+document.querySelectorAll('.rev,.rev-l,.stg,.divider').forEach(el=>obs.observe(el));
+
+// ─── SKILL BARS ───
+const skObs=new IntersectionObserver(els=>{els.forEach(e=>{if(e.isIntersecting)e.target.querySelectorAll('.sk-fill').forEach(f=>{f.style.width=f.dataset.w+'%';});});},{threshold:0.3});
+document.querySelectorAll('.skills').forEach(el=>skObs.observe(el));
+
+// ─── LIVE YOUTUBE STATS via YouTube Data API ───
+// NOTE: Replace YOUR_API_KEY below with a real YouTube Data API v3 key
+// Get a free key at: console.cloud.google.com → Enable YouTube Data API v3
+const YT_API_KEY = 'AIzaSyCpcIxfYhxw2FTIdtiETuTFz12Mlv6uOBM';
+const CHANNEL_ID  = 'UC6MnQI8E6Ry0IpLZz6iNtCQ';
+
+async function fetchYTStats(){
+  try{
+    const res=await fetch(`https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${CHANNEL_ID}&key=${YT_API_KEY}`);
+    const data=await res.json();
+    if(data.items&&data.items.length>0){
+      const s=data.items[0].statistics;
+      animCount('s-subs',+s.subscriberCount,'');
+      animCount('s-vids',+s.videoCount,'');
+      animCount('s-views',+s.viewCount,'');
+    } else {
+      throw new Error('No data');
+    }
+  }catch(e){
+    // Show correct current numbers as fallback
+    animCount('s-subs',51,'');
+    animCount('s-vids',24,'');
+    animCount('s-views',2442,'');
+  }
+}
+
+function animCount(id,target,suffix){
+  const el=document.getElementById(id);
+  if(!el)return;
+  let c=0;const steps=60;const inc=Math.ceil(target/steps);
+  const iv=setInterval(()=>{
+    c+=inc;if(c>=target){c=target;clearInterval(iv);}
+    el.textContent=c.toLocaleString('en-IN')+suffix;
+  },30);
+}
+
+// Fetch on load + refresh every 5 minutes
+fetchYTStats();
+setInterval(fetchYTStats,5*60*1000);
+
+// ─── TYPEWRITER ───
+const phrases=["AI & Tech Hacks Daily 🤖","Hidden Tools for Students 💡","Internship Alerts 🎓","Best Free AI Tools ⚡","Focus · Discipline · Success 🔥"];
+let pi=0,ci=0,del=false;
+const tw=document.getElementById('tw');
+function type(){
+  const w=phrases[pi];
+  if(!del){tw.textContent=w.slice(0,++ci);if(ci===w.length){del=true;setTimeout(type,1600);return;}}
+  else{tw.textContent=w.slice(0,--ci);if(ci===0){del=false;pi=(pi+1)%phrases.length;}}
+  setTimeout(type,del?55:105);
+}
+setTimeout(type,2400);
+
+// ─── SCROLL TOP ───
+const stb=document.getElementById('scrolltop');
+window.addEventListener('scroll',()=>stb.classList.toggle('on',window.scrollY>400));
+</script>
+</body>
+</html>
